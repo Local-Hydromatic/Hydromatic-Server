@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hydromatic Control Center</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --accent: #38bdf8;
+        --text: #f8fafc;
+        --muted: #cbd5f5;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e293b, #0f172a);
+        color: var(--text);
+      }
+
+      header {
+        padding: 32px 48px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+      }
+
+      .status-pill {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.2);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        font-size: 14px;
+      }
+
+      main {
+        padding: 0 48px 48px;
+        display: grid;
+        gap: 24px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      .card {
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+      }
+
+      .card h2 {
+        margin-top: 0;
+        font-size: 18px;
+      }
+
+      .metric {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin: 12px 0;
+      }
+
+      .metric strong {
+        font-size: 24px;
+        color: var(--accent);
+      }
+
+      .alert {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+      }
+
+      .camera {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .camera-placeholder {
+        border-radius: 12px;
+        border: 1px dashed rgba(148, 163, 184, 0.6);
+        background: rgba(148, 163, 184, 0.1);
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+      }
+
+      footer {
+        padding: 12px 48px 32px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        main {
+          padding: 0 24px 32px;
+        }
+
+        footer {
+          padding: 12px 24px 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Hydromatic Control Center</h1>
+        <p>Local diagnostics, camera monitoring, and environmental telemetry.</p>
+      </div>
+      <div class="status-pill" id="status-pill">Connecting...</div>
+    </header>
+
+    <main>
+      <section class="grid">
+        <article class="card" id="environment-card">
+          <h2>Environment</h2>
+          <div class="metric"><span>Temperature</span><strong id="temp">--</strong></div>
+          <div class="metric"><span>Humidity</span><strong id="humidity">--</strong></div>
+          <div class="metric"><span>CO₂</span><strong id="co2">--</strong></div>
+          <div class="metric"><span>pH</span><strong id="ph">--</strong></div>
+          <div class="metric"><span>EC</span><strong id="ec">--</strong></div>
+        </article>
+
+        <article class="card" id="reservoir-card">
+          <h2>Reservoir</h2>
+          <div class="metric"><span>Volume</span><strong id="volume">--</strong></div>
+          <div class="metric"><span>Water Level</span><strong id="level">--</strong></div>
+          <div class="metric"><span>Pump</span><strong id="pump">--</strong></div>
+        </article>
+
+        <article class="card" id="lighting-card">
+          <h2>Lighting</h2>
+          <div class="metric"><span>Mode</span><strong id="mode">--</strong></div>
+          <div class="metric"><span>Intensity</span><strong id="intensity">--</strong></div>
+          <div class="metric"><span>Photoperiod</span><strong id="photoperiod">--</strong></div>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Alerts</h2>
+          <div class="alert" id="alert">Loading diagnostics...</div>
+        </article>
+
+        <article class="card camera">
+          <h2>Camera</h2>
+          <div class="camera-placeholder">Stream preview placeholder</div>
+          <div>RTSP source: <span id="camera-stream">--</span></div>
+        </article>
+      </section>
+    </main>
+
+    <footer>Last updated: <span id="timestamp">--</span></footer>
+
+    <script>
+      const formatValue = (value, unit) => `${value}${unit}`;
+
+      const updateStatus = (payload) => {
+        document.getElementById("status-pill").textContent = "Online";
+        document.getElementById("timestamp").textContent = new Date(payload.timestamp).toLocaleString();
+
+        const env = payload.environment;
+        document.getElementById("temp").textContent = formatValue(env.temperature_c, "°C");
+        document.getElementById("humidity").textContent = formatValue(env.humidity_percent, "%");
+        document.getElementById("co2").textContent = formatValue(env.co2_ppm, " ppm");
+        document.getElementById("ph").textContent = env.ph;
+        document.getElementById("ec").textContent = formatValue(env.ec, " mS/cm");
+
+        const reservoir = payload.reservoir;
+        document.getElementById("volume").textContent = formatValue(reservoir.volume_liters, " L");
+        document.getElementById("level").textContent = formatValue(reservoir.water_level_percent, "%");
+        document.getElementById("pump").textContent = reservoir.pump_state;
+
+        const lighting = payload.lighting;
+        document.getElementById("mode").textContent = lighting.mode;
+        document.getElementById("intensity").textContent = formatValue(lighting.intensity_percent, "%");
+        document.getElementById("photoperiod").textContent = lighting.photoperiod;
+
+        const alert = payload.alerts?.[0];
+        document.getElementById("alert").textContent = alert ? alert.message : "No alerts";
+
+        document.getElementById("camera-stream").textContent = payload.camera.stream;
+      };
+
+      fetch("/api/status")
+        .then((response) => response.json())
+        .then(updateStatus)
+        .catch(() => {
+          document.getElementById("status-pill").textContent = "Offline";
+          document.getElementById("alert").textContent = "Unable to load diagnostics.";
+        });
+    </script>
+  </body>
+</html>
