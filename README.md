@@ -8,7 +8,7 @@ Local-first control center for a hydroponic system. This repository now includes
 docker compose up --build
 ```
 
-Then open `http://localhost:8080` to see the dashboard.
+Then open `http://127.0.0.1:8081` to see the dashboard.
 
 ## What’s included
 

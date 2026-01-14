@@ -17,8 +17,8 @@ logger = logging.getLogger("hydromatic.mqtt")
 @dataclass
 class MQTTConfig:
     enabled: bool = False
-    broker_host: str = "localhost"
-    broker_port: int = 1883
+    broker_host: str = "mqtt-broker"
+    broker_port: int = 1881
     username: Optional[str] = None
     password: Optional[str] = None
     tls: bool = False
@@ -259,8 +259,8 @@ class HydromaticMQTTService:
 def load_mqtt_config() -> MQTTConfig:
     return MQTTConfig(
         enabled=os.getenv("MQTT_ENABLED", "false").lower() == "true",
-        broker_host=os.getenv("MQTT_BROKER_HOST", "localhost"),
-        broker_port=int(os.getenv("MQTT_BROKER_PORT", "1883")),
+        broker_host=os.getenv("MQTT_BROKER_HOST", "mqtt-broker"),
+        broker_port=int(os.getenv("MQTT_BROKER_PORT", "1881")),
         username=os.getenv("MQTT_USERNAME"),
         password=os.getenv("MQTT_PASSWORD"),
         tls=os.getenv("MQTT_TLS", "false").lower() == "true",
