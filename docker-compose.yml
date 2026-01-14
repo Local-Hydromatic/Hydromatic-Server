@@ -5,28 +5,28 @@ services:
     build:
       context: .
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       HYDROMATIC_TIMEZONE: "UTC"
       MQTT_ENABLED: "true"
-      MQTT_BROKER_HOST: "mqtt"
-      MQTT_BROKER_PORT: "1883"
+      MQTT_BROKER_HOST: "mqtt-broker"
+      MQTT_BROKER_PORT: "1881"
       MQTT_SITE_ID: "primary"
       MQTT_TOPIC_PREFIX: "hydromatic"
     volumes:
       - ./data:/data
     depends_on:
-      - mqtt
+      - mqtt-broker
     restart: unless-stopped
     # For camera access on embedded hardware, you may need to map devices:
     # devices:
     #   - /dev/video0:/dev/video0
     # privileged: true
 
-  mqtt:
+  mqtt-broker:
     image: eclipse-mosquitto:2.0
     ports:
-      - "1883:1883"
+      - "1881:1881"
     volumes:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./data/mosquitto:/mosquitto/data

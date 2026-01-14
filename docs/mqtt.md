@@ -12,7 +12,7 @@ This system is designed so every controller, sensor board, and actuator communic
 
 ## Broker Setup (Mosquitto)
 
-The `docker-compose.yml` file launches a Mosquitto broker at `mqtt:1883`. To run locally:
+The `docker-compose.yml` file launches a Mosquitto broker at `mqtt-broker:1881`. To run locally:
 
 ```bash
 docker compose up --build
@@ -49,8 +49,8 @@ These are read by the FastAPI service:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `MQTT_ENABLED` | `false` | Enable MQTT subscriber loop. |
-| `MQTT_BROKER_HOST` | `localhost` | MQTT broker host. |
-| `MQTT_BROKER_PORT` | `1883` | MQTT broker port. |
+| `MQTT_BROKER_HOST` | `mqtt-broker` | MQTT broker host. |
+| `MQTT_BROKER_PORT` | `1881` | MQTT broker port. |
 | `MQTT_USERNAME` | unset | Username for broker auth. |
 | `MQTT_PASSWORD` | unset | Password for broker auth. |
 | `MQTT_TLS` | `false` | Enable TLS when `true`. |
@@ -198,7 +198,7 @@ import time
 import paho.mqtt.client as mqtt
 
 client = mqtt.Client(client_id="reservoir-controller")
-client.connect("localhost", 1883)
+client.connect("127.0.0.1", 1881)
 
 while True:
     payload = {
