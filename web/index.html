@@ -10,8 +10,11 @@
         --bg: #0f172a;
         --panel: #111827;
         --accent: #38bdf8;
+        --accent-strong: #0ea5e9;
+        --accent-soft: rgba(56, 189, 248, 0.2);
         --text: #f8fafc;
         --muted: #cbd5f5;
+        --warning: #f97316;
       }
 
       * {
@@ -29,7 +32,8 @@
         padding: 32px 48px 16px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
+        gap: 16px;
       }
 
       header h1 {
@@ -45,15 +49,47 @@
       .status-pill {
         padding: 8px 14px;
         border-radius: 999px;
-        background: rgba(56, 189, 248, 0.2);
+        background: var(--accent-soft);
         border: 1px solid rgba(56, 189, 248, 0.5);
         font-size: 14px;
+      }
+
+      nav.tabs {
+        display: flex;
+        gap: 12px;
+        padding: 0 48px 12px;
+        flex-wrap: wrap;
+      }
+
+      .tab-button {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        color: var(--text);
+        padding: 10px 16px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .tab-button.active {
+        background: var(--accent-soft);
+        border-color: var(--accent-strong);
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
       }
 
       main {
         padding: 0 48px 48px;
         display: grid;
         gap: 24px;
+      }
+
+      .tab-panel {
+        display: none;
+        gap: 24px;
+      }
+
+      .tab-panel.active {
+        display: grid;
       }
 
       .grid {
@@ -87,11 +123,23 @@
         color: var(--accent);
       }
 
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.15);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
       .alert {
         margin-top: 12px;
         padding: 12px;
         border-radius: 12px;
-        background: rgba(56, 189, 248, 0.15);
+        background: var(--accent-soft);
         border: 1px solid rgba(56, 189, 248, 0.4);
       }
 
@@ -112,6 +160,71 @@
         color: var(--muted);
       }
 
+      .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      }
+
+      .schedule-item:last-child {
+        border-bottom: none;
+      }
+
+      .schedule-item span {
+        color: var(--muted);
+      }
+
+      .timeline {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .loop-card {
+        display: grid;
+        gap: 12px;
+      }
+
+      .loop-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .loop-values {
+        display: flex;
+        gap: 12px;
+        font-size: 14px;
+      }
+
+      .loop-values strong {
+        color: var(--accent);
+      }
+
+      .loop-graph {
+        width: 100%;
+        height: 80px;
+        background: rgba(15, 23, 42, 0.4);
+        border-radius: 12px;
+        padding: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+      }
+
+      .loop-actions {
+        display: grid;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .loop-actions span {
+        display: flex;
+        justify-content: space-between;
+      }
+
       footer {
         padding: 12px 48px 32px;
         color: var(--muted);
@@ -125,8 +238,9 @@
           gap: 12px;
         }
 
+        nav.tabs,
         main {
-          padding: 0 24px 32px;
+          padding: 0 24px 24px;
         }
 
         footer {
@@ -144,43 +258,93 @@
       <div class="status-pill" id="status-pill">Connecting...</div>
     </header>
 
+    <nav class="tabs">
+      <button class="tab-button active" data-tab="overview">Overview</button>
+      <button class="tab-button" data-tab="schedules">Schedules & Cycles</button>
+      <button class="tab-button" data-tab="loops">Closed Loops</button>
+    </nav>
+
     <main>
-      <section class="grid">
-        <article class="card" id="environment-card">
-          <h2>Environment</h2>
-          <div class="metric"><span>Temperature</span><strong id="temp">--</strong></div>
-          <div class="metric"><span>Humidity</span><strong id="humidity">--</strong></div>
-          <div class="metric"><span>CO₂</span><strong id="co2">--</strong></div>
-          <div class="metric"><span>pH</span><strong id="ph">--</strong></div>
-          <div class="metric"><span>EC</span><strong id="ec">--</strong></div>
-        </article>
+      <section class="tab-panel active" data-tab="overview">
+        <section class="grid">
+          <article class="card" id="environment-card">
+            <h2>Environment</h2>
+            <div class="metric"><span>Temperature</span><strong id="temp">--</strong></div>
+            <div class="metric"><span>Humidity</span><strong id="humidity">--</strong></div>
+            <div class="metric"><span>CO₂</span><strong id="co2">--</strong></div>
+            <div class="metric"><span>pH</span><strong id="ph">--</strong></div>
+            <div class="metric"><span>EC</span><strong id="ec">--</strong></div>
+          </article>
 
-        <article class="card" id="reservoir-card">
-          <h2>Reservoir</h2>
-          <div class="metric"><span>Volume</span><strong id="volume">--</strong></div>
-          <div class="metric"><span>Water Level</span><strong id="level">--</strong></div>
-          <div class="metric"><span>Pump</span><strong id="pump">--</strong></div>
-        </article>
+          <article class="card" id="reservoir-card">
+            <h2>Reservoir</h2>
+            <div class="metric"><span>Volume</span><strong id="volume">--</strong></div>
+            <div class="metric"><span>Water Level</span><strong id="level">--</strong></div>
+            <div class="metric"><span>Pump</span><strong id="pump">--</strong></div>
+          </article>
 
-        <article class="card" id="lighting-card">
-          <h2>Lighting</h2>
-          <div class="metric"><span>Mode</span><strong id="mode">--</strong></div>
-          <div class="metric"><span>Intensity</span><strong id="intensity">--</strong></div>
-          <div class="metric"><span>Photoperiod</span><strong id="photoperiod">--</strong></div>
-        </article>
+          <article class="card" id="lighting-card">
+            <h2>Lighting</h2>
+            <div class="metric"><span>Mode</span><strong id="mode">--</strong></div>
+            <div class="metric"><span>Intensity</span><strong id="intensity">--</strong></div>
+            <div class="metric"><span>Photoperiod</span><strong id="photoperiod">--</strong></div>
+            <div class="badge" id="lighting-next">Next transition: --</div>
+          </article>
+
+          <article class="card" id="flow-card">
+            <h2>Ebb-Flow Control</h2>
+            <div class="metric"><span>Phase</span><strong id="flow-phase">--</strong></div>
+            <div class="metric"><span>Remaining</span><strong id="flow-remaining">--</strong></div>
+            <div class="metric"><span>Pump State</span><strong id="flow-pump">--</strong></div>
+            <div class="metric"><span>Next Cycle</span><strong id="flow-next">--</strong></div>
+          </article>
+        </section>
+
+        <section class="grid">
+          <article class="card">
+            <h2>Alerts</h2>
+            <div class="alert" id="alert">Loading diagnostics...</div>
+          </article>
+
+          <article class="card camera">
+            <h2>Camera</h2>
+            <div class="camera-placeholder">Stream preview placeholder</div>
+            <div>RTSP source: <span id="camera-stream">--</span></div>
+          </article>
+        </section>
       </section>
 
-      <section class="grid">
-        <article class="card">
-          <h2>Alerts</h2>
-          <div class="alert" id="alert">Loading diagnostics...</div>
-        </article>
+      <section class="tab-panel" data-tab="schedules">
+        <section class="grid">
+          <article class="card">
+            <h2>Lighting Schedule</h2>
+            <div class="schedule-item"><span>Cycle</span><strong id="schedule-light-cycle">--</strong></div>
+            <div class="schedule-item"><span>Lights On</span><strong id="schedule-light-on">--</strong></div>
+            <div class="schedule-item"><span>Lights Off</span><strong id="schedule-light-off">--</strong></div>
+            <div class="schedule-item"><span>Next Transition</span><strong id="schedule-light-next">--</strong></div>
+            <div class="schedule-item"><span>Override</span><strong id="schedule-light-override">--</strong></div>
+          </article>
 
-        <article class="card camera">
-          <h2>Camera</h2>
-          <div class="camera-placeholder">Stream preview placeholder</div>
-          <div>RTSP source: <span id="camera-stream">--</span></div>
-        </article>
+          <article class="card">
+            <h2>Ebb-Flow Cycle</h2>
+            <div class="schedule-item"><span>Mode</span><strong id="schedule-flow-mode">--</strong></div>
+            <div class="schedule-item"><span>Ebb Duration</span><strong id="schedule-flow-ebb">--</strong></div>
+            <div class="schedule-item"><span>Flow Duration</span><strong id="schedule-flow-flow">--</strong></div>
+            <div class="schedule-item"><span>Next Cycle Start</span><strong id="schedule-flow-next">--</strong></div>
+            <div class="schedule-item"><span>Last Cycle Start</span><strong id="schedule-flow-last">--</strong></div>
+          </article>
+        </section>
+
+        <section class="grid">
+          <article class="card">
+            <h2>Cycle Actions</h2>
+            <div class="timeline" id="cycle-timeline">Loading schedule timeline...</div>
+          </article>
+        </section>
+      </section>
+
+      <section class="tab-panel" data-tab="loops">
+        <section class="grid" id="closed-loops">Loading control loops...</section>
       </section>
     </main>
 
@@ -189,9 +353,114 @@
     <script>
       const formatValue = (value, unit) => `${value}${unit}`;
 
+      const formatDuration = (seconds) => {
+        if (seconds === null || seconds === undefined) {
+          return "--";
+        }
+        const minutes = Math.floor(seconds / 60);
+        const remainder = seconds % 60;
+        return `${minutes}m ${remainder}s`;
+      };
+
+      const formatDateTime = (value) => {
+        if (!value) {
+          return "--";
+        }
+        return new Date(value).toLocaleString();
+      };
+
+      const setupTabs = () => {
+        const buttons = document.querySelectorAll(".tab-button");
+        const panels = document.querySelectorAll(".tab-panel");
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const tab = button.dataset.tab;
+            buttons.forEach((btn) => btn.classList.toggle("active", btn === button));
+            panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.tab === tab));
+          });
+        });
+      };
+
+      const buildSparkline = (currentSeries, targetSeries) => {
+        const width = 160;
+        const height = 48;
+        const allValues = [...currentSeries, ...targetSeries];
+        const min = Math.min(...allValues);
+        const max = Math.max(...allValues);
+        const scale = (value) => {
+          if (max === min) {
+            return height / 2;
+          }
+          return height - ((value - min) / (max - min)) * height;
+        };
+
+        const buildPath = (series) =>
+          series
+            .map((value, index) => {
+              const x = (index / (series.length - 1)) * width;
+              const y = scale(value);
+              return `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+            })
+            .join(" ");
+
+        const currentPath = buildPath(currentSeries);
+        const targetPath = buildPath(targetSeries);
+
+        return `
+          <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" aria-hidden="true">
+            <path d="${targetPath}" fill="none" stroke="rgba(148,163,184,0.6)" stroke-width="2" />
+            <path d="${currentPath}" fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue(
+              "--accent"
+            )}" stroke-width="2" />
+          </svg>
+        `;
+      };
+
+      const renderClosedLoops = (loops) => {
+        const container = document.getElementById("closed-loops");
+        if (!loops || loops.length === 0) {
+          container.textContent = "No closed loop controllers active.";
+          return;
+        }
+        container.innerHTML = "";
+        loops.forEach((loop) => {
+          const card = document.createElement("article");
+          card.className = "card loop-card";
+
+          const title = document.createElement("div");
+          title.className = "loop-header";
+          title.innerHTML = `<h2>${loop.name}</h2><span class="badge">${loop.status}</span>`;
+
+          const values = document.createElement("div");
+          values.className = "loop-values";
+          values.innerHTML = `
+            <div>Current: <strong>${loop.current}${loop.unit}</strong></div>
+            <div>Target: ${loop.target}${loop.unit}</div>
+          `;
+
+          const graph = document.createElement("div");
+          graph.className = "loop-graph";
+          graph.innerHTML = buildSparkline(loop.history.current, loop.history.target);
+
+          const actions = document.createElement("div");
+          actions.className = "loop-actions";
+          actions.innerHTML = loop.actions
+            .map((action) => `<span><strong>${action.time}</strong><span>${action.note}</span></span>`)
+            .join("");
+
+          const lastAction = document.createElement("div");
+          lastAction.className = "badge";
+          lastAction.textContent = `Last action: ${loop.last_action}`;
+
+          card.append(title, values, graph, lastAction, actions);
+          container.appendChild(card);
+        });
+      };
+
       const updateStatus = (payload) => {
         document.getElementById("status-pill").textContent = "Online";
-        document.getElementById("timestamp").textContent = new Date(payload.timestamp).toLocaleString();
+        document.getElementById("timestamp").textContent = formatDateTime(payload.timestamp);
 
         const env = payload.environment;
         document.getElementById("temp").textContent = formatValue(env.temperature_c, "°C");
@@ -209,12 +478,41 @@
         document.getElementById("mode").textContent = lighting.mode;
         document.getElementById("intensity").textContent = formatValue(lighting.intensity_percent, "%");
         document.getElementById("photoperiod").textContent = lighting.photoperiod;
+        document.getElementById("lighting-next").textContent = `Next transition: ${lighting.next_transition}`;
+
+        const flow = payload.flow;
+        document.getElementById("flow-phase").textContent = flow.phase;
+        document.getElementById("flow-remaining").textContent = formatDuration(flow.phase_remaining_seconds);
+        document.getElementById("flow-pump").textContent = flow.pump_state;
+        document.getElementById("flow-next").textContent = formatDateTime(flow.next_cycle_start);
+
+        const schedules = payload.schedules;
+        document.getElementById("schedule-light-cycle").textContent = schedules.lighting.cycle;
+        document.getElementById("schedule-light-on").textContent = schedules.lighting.on_time;
+        document.getElementById("schedule-light-off").textContent = schedules.lighting.off_time;
+        document.getElementById("schedule-light-next").textContent = formatDateTime(schedules.lighting.next_transition);
+        document.getElementById("schedule-light-override").textContent = schedules.lighting.override;
+
+        document.getElementById("schedule-flow-mode").textContent = schedules.ebb_flow.mode;
+        document.getElementById("schedule-flow-ebb").textContent = `${schedules.ebb_flow.ebb_minutes} min`;
+        document.getElementById("schedule-flow-flow").textContent = `${schedules.ebb_flow.flow_minutes} min`;
+        document.getElementById("schedule-flow-next").textContent = formatDateTime(schedules.ebb_flow.next_cycle_start);
+        document.getElementById("schedule-flow-last").textContent = formatDateTime(schedules.ebb_flow.last_cycle_start);
+
+        const timeline = document.getElementById("cycle-timeline");
+        timeline.innerHTML = schedules.timeline
+          .map((item) => `<span><strong>${item.time}</strong> — ${item.action}</span>`)
+          .join("");
 
         const alert = payload.alerts?.[0];
         document.getElementById("alert").textContent = alert ? alert.message : "No alerts";
 
         document.getElementById("camera-stream").textContent = payload.camera.stream;
+
+        renderClosedLoops(payload.closed_loops);
       };
+
+      setupTabs();
 
       fetch("/api/status")
         .then((response) => response.json())

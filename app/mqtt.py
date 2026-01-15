@@ -52,14 +52,93 @@ class MQTTState:
             "mode": "auto",
             "intensity_percent": 72,
             "photoperiod": "18/6",
+            "next_transition": datetime.now(timezone.utc).isoformat(),
         }
     )
     flow: Dict[str, Any] = field(
         default_factory=lambda: {
             "phase": "ebb",
-            "phase_remaining_seconds": 0,
-            "last_cycle_start": None,
+            "phase_remaining_seconds": 540,
+            "last_cycle_start": datetime.now(timezone.utc).isoformat(),
+            "next_cycle_start": datetime.now(timezone.utc).isoformat(),
+            "pump_state": "circulation",
         }
+    )
+    schedules: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "lighting": {
+                "cycle": "18/6",
+                "on_time": "06:00",
+                "off_time": "00:00",
+                "next_transition": datetime.now(timezone.utc).isoformat(),
+                "override": "none",
+            },
+            "ebb_flow": {
+                "mode": "auto",
+                "ebb_minutes": 15,
+                "flow_minutes": 45,
+                "next_cycle_start": datetime.now(timezone.utc).isoformat(),
+                "last_cycle_start": datetime.now(timezone.utc).isoformat(),
+            },
+            "timeline": [
+                {"time": "06:00", "action": "Lights on + start flow cycle"},
+                {"time": "06:15", "action": "Drain table + fan pulse"},
+                {"time": "06:45", "action": "Refill table to 70%"},
+                {"time": "00:00", "action": "Lights off + ebb hold"},
+            ],
+        }
+    )
+    closed_loops: List[Dict[str, Any]] = field(
+        default_factory=lambda: [
+            {
+                "name": "Humidity Loop",
+                "unit": "%",
+                "current": 58,
+                "target": 60,
+                "status": "stabilizing",
+                "last_action": "Vent fan pulse 45s",
+                "history": {
+                    "current": [54, 56, 57, 58, 59, 58],
+                    "target": [60, 60, 60, 60, 60, 60],
+                },
+                "actions": [
+                    {"time": "08:05", "note": "Humidifier 30s"},
+                    {"time": "08:18", "note": "Vent fan 45s"},
+                ],
+            },
+            {
+                "name": "pH Loop",
+                "unit": "",
+                "current": 6.1,
+                "target": 6.0,
+                "status": "on target",
+                "last_action": "Dose acid 2ml",
+                "history": {
+                    "current": [6.3, 6.2, 6.1, 6.1, 6.0, 6.1],
+                    "target": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0],
+                },
+                "actions": [
+                    {"time": "07:42", "note": "Dose acid 2ml"},
+                    {"time": "07:55", "note": "Mixing pump 90s"},
+                ],
+            },
+            {
+                "name": "CO₂ Loop",
+                "unit": " ppm",
+                "current": 620,
+                "target": 750,
+                "status": "boosting",
+                "last_action": "CO₂ solenoid 20s",
+                "history": {
+                    "current": [580, 600, 615, 620, 635, 640],
+                    "target": [750, 750, 750, 750, 750, 750],
+                },
+                "actions": [
+                    {"time": "08:12", "note": "CO₂ solenoid 20s"},
+                    {"time": "08:20", "note": "Vent close 30s"},
+                ],
+            },
+        ]
     )
     alerts: List[Dict[str, Any]] = field(
         default_factory=lambda: [
@@ -84,6 +163,8 @@ class MQTTState:
             "reservoir": self.reservoir,
             "lighting": self.lighting,
             "flow": self.flow,
+            "schedules": self.schedules,
+            "closed_loops": self.closed_loops,
             "alerts": self.alerts,
             "camera": self.camera,
             "devices": self.devices,
@@ -104,6 +185,10 @@ class MQTTState:
         self.camera.update(payload.get("camera", {}))
         if "flow" in payload:
             self.flow.update(payload["flow"])
+        if "schedules" in payload:
+            self.schedules.update(payload["schedules"])
+        if "closed_loops" in payload and isinstance(payload["closed_loops"], list):
+            self.closed_loops = payload["closed_loops"]
         if "alerts" in payload:
             self.alerts = payload["alerts"]
 
